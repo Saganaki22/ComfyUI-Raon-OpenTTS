@@ -2,6 +2,9 @@
 
 **[English](./README.md)** | **[中文](./README_zh.md)**
 
+<img width="1562" height="1006" alt="Screenshot 2026-08-19 200146" src="https://github.com/user-attachments/assets/4414cb0f-3b82-4826-ba7d-9665f795d480" />
+
+
 Native ComfyUI nodes for [KRAFTON Raon-OpenTTS](https://github.com/krafton-ai/Raon-OpenTTS) — open-weight, open-data zero-shot voice cloning (F5-TTS-style CFM/DiT + HiFi-GAN, 16 kHz English).
 
 Supports the official checkpoints repacked to safetensors in three flavors, including an **INT8 ConvRot** build that executes through [comfy-kitchen](https://github.com/Comfy-Org/comfy-kitchen) quantized kernels (weights stay INT8-resident; no dequantize-to-bf16 at load).

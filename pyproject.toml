@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-raon-opentts"
 description = "ComfyUI nodes for KRAFTON Raon-OpenTTS (F5-TTS-style CFM/DiT) with INT8 ConvRot quantization support via comfy-kitchen"
-version = "1.0.0"
+version = "1.1.0"
 license = { text = "MIT" }
 dependencies = [
     "numpy",

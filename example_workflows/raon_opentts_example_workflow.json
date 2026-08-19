@@ -43,7 +43,7 @@
       ],
       "properties": {
         "cnr_id": "comfyui-raon-opentts",
-        "ver": "1.1.0",
+        "ver": "1.1.1",
         "Node name for S&R": "RaonWhisperTranscribe",
         "ue_properties": {
           "widget_ue_connectable": {},
@@ -113,7 +113,7 @@
       ],
       "properties": {
         "cnr_id": "comfyui-raon-opentts",
-        "ver": "1.1.0",
+        "ver": "1.1.1",
         "Node name for S&R": "RaonOpenTTSGenerate",
         "ue_properties": {
           "widget_ue_connectable": {
@@ -178,7 +178,7 @@
       ],
       "properties": {
         "cnr_id": "comfyui-raon-opentts",
-        "ver": "1.1.0",
+        "ver": "1.1.1",
         "Node name for S&R": "RaonOpenTTSLoadModel",
         "ue_properties": {
           "widget_ue_connectable": {},

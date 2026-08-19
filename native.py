@@ -642,12 +642,15 @@ class DiT(nn.Module):
     def get_input_embed(self, x, cond, text, drop_audio_cond=False, drop_text=False, cache=True):
         seq_len = x.shape[1]
         if cache:
+            # the cache is only valid for the seq_len it was computed at: a previous
+            # run that died mid-ODE leaves a stale embedding behind and would crash
+            # torch.cat in InputEmbedding, so recompute whenever the length differs
             if drop_text:
-                if self.text_uncond is None:
+                if self.text_uncond is None or self.text_uncond.shape[1] != seq_len:
                     self.text_uncond = self.text_embed(text, seq_len, drop_text=True)
                 text_embed = self.text_uncond
             else:
-                if self.text_cond is None:
+                if self.text_cond is None or self.text_cond.shape[1] != seq_len:
                     self.text_cond = self.text_embed(text, seq_len, drop_text=False)
                 text_embed = self.text_cond
         else:
@@ -793,6 +796,12 @@ class CFM(nn.Module):
         step_callback: Callable[[int], None] | None = None,
     ):
         self.eval()
+        # A cancelled/interrupted previous run exits before the end-of-sample
+        # clear_cache(), leaving text embeddings cached at the old seq_len (and old
+        # text); the next generation would crash torch.cat or, worse, silently reuse
+        # the stale conditioning. Start every sample from a clean cache.
+        if hasattr(self.transformer, "clear_cache"):
+            self.transformer.clear_cache()
         if cond.ndim == 2:
             cond = self.mel_spec(cond)
             cond = cond.permute(0, 2, 1)

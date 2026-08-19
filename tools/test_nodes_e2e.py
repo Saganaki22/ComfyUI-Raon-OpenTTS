@@ -32,7 +32,16 @@ def import_package():
 
 def main() -> None:
     weights = sys.argv[1] if len(sys.argv) > 1 else "Raon-OpenTTS-1B/Raon-OpenTTS-1B-bf16.safetensors"
-    use_aimdo = len(sys.argv) > 2 and sys.argv[2] == "aimdo"
+    use_aimdo = len(sys.argv) > 2 and "aimdo" in sys.argv
+    block_xtransformers = "noxtrans" in sys.argv
+    if block_xtransformers:
+        # prove the vendored rotary runs without x_transformers installed
+        import types
+
+        stub = types.ModuleType("x_transformers")
+        stub.__path__ = []
+        sys.modules["x_transformers"] = stub
+        print("x_transformers blocked for this test")
     if use_aimdo:
         import comfy_aimdo.control
         import comfy.memory_management
@@ -50,7 +59,7 @@ def main() -> None:
     )
     print(f"loaded {bundle.weights_file.name} on {bundle.device} ({bundle.dtype_name}, {bundle.attention})")
 
-    audio, sr = torchaudio.load(str(PKG_DIR / "tests" / "assets" / "basic_ref_en.wav"))
+    audio, sr = torchaudio.load(str(PKG_DIR / "example_workflows" / "basic_ref_en.wav"))
     ref_audio = {"waveform": audio.unsqueeze(0), "sample_rate": sr}  # ComfyUI AUDIO: [b, c, n]
 
     (out,) = nodes.RaonOpenTTSGenerate().generate(
@@ -81,7 +90,7 @@ def main() -> None:
 
     import soundfile as sf
 
-    out_path = PKG_DIR / "tests" / "outputs" / "node_level_test.wav"
+    out_path = PKG_DIR / "tools" / "outputs" / "node_level_test.wav"
     sf.write(str(out_path), wave[0, 0].cpu().numpy(), out["sample_rate"])
     print(f"saved {out_path}")
     print("NODE E2E PASS")

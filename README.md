@@ -41,53 +41,6 @@ ComfyUI/models/raon_opentts/
   tts-hifigan-libritts-16kHz/generator.ckpt   (auto-downloaded)
 ```
 
-## Reproducing the checkpoints
-
-Requires the official training checkpoint (`model_520000.pt` / `model_225000.pt`), `config.yaml` and `vocab.txt` from the KRAFTON HF repos, plus a clone of [Comfy-Org/comfy-model-tools](https://github.com/Comfy-Org/comfy-model-tools) in `upstream/`.
-
-```powershell
-$PY = "C:\path\to\ComfyUI\venv\Scripts\python.exe"
-$M  = "C:\path\to\ComfyUI\models\raon_opentts\Raon-OpenTTS-1B"
-
-# 1) clean inference-only extraction (EMA weights, fp32)
-& $PY tools/convert_raon_to_safetensors.py --ckpt "$M/model_520000.pt" `
-    --config "$M/config.yaml" --vocab "$M/vocab.txt" `
-    --out "$M/Raon-OpenTTS-1B-fp32.safetensors" --dtype keep
-
-# 2) verify the extraction is bit-exact (all 448 tensors, torch.equal)
-& $PY tools/validate_raon_safetensors.py --safetensors "$M/Raon-OpenTTS-1B-fp32.safetensors" `
-    --config "$M/config.yaml" --source "$M/model_520000.pt"
-
-# 3) bf16 runtime build (inv_freq stays fp32)
-& $PY tools/convert_raon_to_safetensors.py --ckpt "$M/model_520000.pt" `
-    --config "$M/config.yaml" --vocab "$M/vocab.txt" `
-    --out "$M/Raon-OpenTTS-1B-bf16.safetensors" --dtype bf16
-
-# 4) INT8 ConvRot (dry-run first, then generate + validate)
-& $PY tools/quantize_raon_int8_convrot.py --src "$M/Raon-OpenTTS-1B-fp32.safetensors" --dry-run
-& $PY tools/quantize_raon_int8_convrot.py --src "$M/Raon-OpenTTS-1B-fp32.safetensors"
-& $PY tools/validate_raon_int8_convrot.py "$M/Raon-OpenTTS-1B-int8-convrot.safetensors" --expect-blocks 28
-
-# 5) kernel unit tests + end-to-end comparison (from the ComfyUI root)
-& $PY tools/test_int8_kernels.py "$M/Raon-OpenTTS-1B-int8-convrot.safetensors" "$M/Raon-OpenTTS-1B-fp32.safetensors"
-& $PY tools/test_e2e_int8_vs_fp32.py 1B
-```
-
-The 0.3B uses `model_225000.pt` and `--expect-blocks 22`.
-
-## Quantization recipe (V1, conservative)
-
-Quantized: exactly the 6 repeated block GEMMs per DiT block — `attn.to_q/to_k/to_v/to_out.0`, `ff.ff.0.0` (up), `ff.ff.2` (down).
-
-- 1B (dim 1408, heads 24, inner 1536, ff 5632): 168 layers = 112x GS64 (K=1408) + 56x GS256 (K=1536/5632). Note 1408 % 256 != 0, so GS64 is what makes the main transformer width ConvRot-eligible.
-- 0.3B (dim 1024, inner 1024, ff 2048): 132 layers, all GS256.
-- Left full precision: token embedding, ConvNeXt text blocks, per-block AdaLN modulation, time-embedding MLP, input projection, conv positional embedding, final AdaLN + proj_out, norms, `inv_freq`.
-- Standard absmax scales (no MSE clip). Per-row fp32 scales, per-layer JSON markers (`int8_tensorwise` + `convrot` + `convrot_groupsize`).
-
-## Vocab note (5559 vs 5555)
-
-The released `vocab.txt` has 5559 tokens; both checkpoints embed 5555 (`embedding rows = 5556` including the filler). The model is therefore built with `text_num_embeds=5555` (checkpoint is ground truth), and the 4 overhanging tokens — the highest-codepoint entries in the sorted file (U+FDFA `ﷺ`, U+FDFB `ﷻ`, U+FFFD `�`, U+1F3B5 `🎵`) — are dropped from the runtime map (they tokenize like any other unknown character). Since the vocab file is sorted and the four extras are its four highest-codepoint entries, every usable character keeps an identical index; end-to-end Whisper transcription of generated audio confirms clean English output. Formally verifying the delta against the training corpus is impractical (the dataset is ~19 TB), so treat those four codepoints as unsupported.
-
 ## Notes
 
 - Attention: `auto` uses the `flash_attn` package (FA2) when installed and compute is half precision, else torch SDPA. The official model defaults to SDPA; FA2 is numerically equivalent within bf16 rounding and helps on long generations. sageattention runs as an SDPA patch.

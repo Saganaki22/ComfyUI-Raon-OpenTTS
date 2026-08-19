@@ -41,7 +41,7 @@ print("package imported with x_transformers blocked: OK")
 
 import torch
 
-with open(PKG_DIR / "tests" / "golden_rotary.pkl", "rb") as f:
+with open(PKG_DIR / "tools" / "outputs" / "golden_rotary.pkl", "rb") as f:
     cases = pickle.load(f)
 
 failures = 0

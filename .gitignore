@@ -7,3 +7,4 @@ tests/outputs/
 
 # local environments / tooling
 .opencode/
+tools/outputs/

@@ -41,53 +41,6 @@ ComfyUI/models/raon_opentts/
   tts-hifigan-libritts-16kHz/generator.ckpt   (自动下载)
 ```
 
-## 复现检查点
-
-需要官方训练检查点(KRAFTON HF 仓库中的 `model_520000.pt` / `model_225000.pt`)、`config.yaml` 和 `vocab.txt`,以及克隆到 `upstream/` 的 [Comfy-Org/comfy-model-tools](https://github.com/Comfy-Org/comfy-model-tools)。
-
-```powershell
-$PY = "C:\path\to\ComfyUI\venv\Scripts\python.exe"
-$M  = "C:\path\to\ComfyUI\models\raon_opentts\Raon-OpenTTS-1B"
-
-# 1) 干净的纯推理提取(EMA 权重,fp32)
-& $PY tools/convert_raon_to_safetensors.py --ckpt "$M/model_520000.pt" `
-    --config "$M/config.yaml" --vocab "$M/vocab.txt" `
-    --out "$M/Raon-OpenTTS-1B-fp32.safetensors" --dtype keep
-
-# 2) 验证提取是否逐位一致(全部 448 个张量,torch.equal)
-& $PY tools/validate_raon_safetensors.py --safetensors "$M/Raon-OpenTTS-1B-fp32.safetensors" `
-    --config "$M/config.yaml" --source "$M/model_520000.pt"
-
-# 3) bf16 运行时版本(inv_freq 保持 fp32)
-& $PY tools/convert_raon_to_safetensors.py --ckpt "$M/model_520000.pt" `
-    --config "$M/config.yaml" --vocab "$M/vocab.txt" `
-    --out "$M/Raon-OpenTTS-1B-bf16.safetensors" --dtype bf16
-
-# 4) INT8 ConvRot(先 dry-run,再生成并验证)
-& $PY tools/quantize_raon_int8_convrot.py --src "$M/Raon-OpenTTS-1B-fp32.safetensors" --dry-run
-& $PY tools/quantize_raon_int8_convrot.py --src "$M/Raon-OpenTTS-1B-fp32.safetensors"
-& $PY tools/validate_raon_int8_convrot.py "$M/Raon-OpenTTS-1B-int8-convrot.safetensors" --expect-blocks 28
-
-# 5) 内核单元测试 + 端到端对比(在 ComfyUI 根目录下运行)
-& $PY tools/test_int8_kernels.py "$M/Raon-OpenTTS-1B-int8-convrot.safetensors" "$M/Raon-OpenTTS-1B-fp32.safetensors"
-& $PY tools/test_e2e_int8_vs_fp32.py 1B
-```
-
-0.3B 使用 `model_225000.pt` 和 `--expect-blocks 22`。
-
-## 量化方案(V1,保守)
-
-量化范围:每个 DiT 块中恰好 6 个重复的块级 GEMM —— `attn.to_q/to_k/to_v/to_out.0`、`ff.ff.0.0`(上行)、`ff.ff.2`(下行)。
-
-- 1B(dim 1408,heads 24,inner 1536,ff 5632):168 层 = 112x GS64(K=1408)+ 56x GS256(K=1536/5632)。注意 1408 % 256 != 0,所以 GS64 是让 1408 宽的主干能用上 ConvRot 的关键。
-- 0.3B(dim 1024,inner 1024,ff 2048):132 层,全部 GS256。
-- 保持全精度:词元嵌入、ConvNeXt 文本块、逐块 AdaLN 调制、时间嵌入 MLP、输入投影、卷积位置编码、最终 AdaLN + proj_out、归一化层、`inv_freq`。
-- 标准 absmax 缩放(不使用 MSE 裁剪)。逐行 fp32 scale,逐层 JSON 标记(`int8_tensorwise` + `convrot` + `convrot_groupsize`)。
-
-## 词表说明(5559 vs 5555)
-
-发布的 `vocab.txt` 有 5559 个词元;两个检查点的嵌入表都是 5555(含 filler 共 5556 行)。因此模型按 `text_num_embeds=5555` 构建(以检查点为准),排序文件尾部 4 个最高码位词元(U+FDFA `ﷺ`、U+FDFB `ﷻ`、U+FFFD `�`、U+1F3B5 `🎵`)会在运行时从映射中丢弃(与其他未知字符一样映射到索引 0)。由于词表文件是有序的,且多出的 4 个词元恰好是码位最高的 4 个,所有可用字符的索引完全一致;生成音频的 Whisper 转写已确认英文输出正常。针对训练语料做形式化验证并不现实(数据集约 19 TB),因此请把这 4 个码位视为不支持。
-
 ## 其他说明
 
 - 注意力:`auto` 在安装了 `flash_attn`(FA2)且为半精度计算时使用 FA2,否则使用 torch SDPA。官方模型默认 SDPA;FA2 在 bf16 舍入范围内数值等价,长文本生成时更快。sageattention 作为 SDPA 补丁运行。

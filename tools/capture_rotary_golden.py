@@ -12,7 +12,7 @@ from pathlib import Path
 import torch
 from x_transformers.x_transformers import RotaryEmbedding, apply_rotary_pos_emb
 
-OUT = Path(__file__).resolve().parent.parent / "tests" / "golden_rotary.pkl"
+OUT = Path(__file__).resolve().parent.parent / "outputs" / "golden_rotary.pkl"
 
 cases = []
 for head_dim in (64,):

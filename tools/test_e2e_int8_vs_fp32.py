@@ -24,10 +24,10 @@ PKG_DIR = Path(__file__).resolve().parent.parent
 COMFY_ROOT = PKG_DIR.parent.parent
 sys.path.insert(0, str(COMFY_ROOT))
 
-OUT_DIR = PKG_DIR / "tests" / "outputs"
+OUT_DIR = PKG_DIR / "tools" / "outputs"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-REF_WAV = PKG_DIR / "tests" / "assets" / "basic_ref_en.wav"
+REF_WAV = PKG_DIR / "example_workflows" / "basic_ref_en.wav"
 REF_TEXT = "Some call me nature, others call me mother nature. "
 GEN_TEXTS = [
     "I don't really care what you call me. I've been a silent spectator, watching species evolve.",

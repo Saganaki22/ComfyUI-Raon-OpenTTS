@@ -35,7 +35,7 @@ def main() -> None:
     import_package()
     whisper = sys.modules["ComfyUI_Raon_OpenTTS.whisper"]
 
-    wavs = sorted((PKG_DIR / "tests" / "outputs").glob("*.wav"))
+    wavs = sorted((PKG_DIR / "tools" / "outputs").glob("*.wav"))
     if not wavs:
         raise SystemExit("no wavs found; run test_e2e_int8_vs_fp32.py first")
     for wav in wavs:

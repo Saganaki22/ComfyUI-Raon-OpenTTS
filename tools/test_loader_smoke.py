@@ -71,7 +71,7 @@ def main() -> None:
         native = sys.modules["ComfyUI_Raon_OpenTTS.native"]
         import torchaudio
 
-        audio, sr = torchaudio.load(str(PKG_DIR / "tests" / "assets" / "basic_ref_en.wav"))
+        audio, sr = torchaudio.load(str(PKG_DIR / "example_workflows" / "basic_ref_en.wav"))
         if audio.shape[0] > 1:
             audio = audio.mean(dim=0, keepdim=True)
         audio = native.normalize_peak(audio)

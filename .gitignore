@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.pyc
+
+# generated test artifacts (keep assets + golden files)
+tests/outputs/
+
+# local environments / tooling
+.opencode/

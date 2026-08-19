@@ -1,0 +1,442 @@
+{
+  "id": "raon-opentts-example-workflow",
+  "revision": 1,
+  "last_node_id": 7,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 7,
+      "type": "RaonWhisperTranscribe",
+      "pos": [
+        184,
+        463
+      ],
+      "size": [
+        300,
+        198
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "transcript",
+          "type": "STRING",
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-raon-opentts",
+        "ver": "1.0.0",
+        "Node name for S&R": "RaonWhisperTranscribe",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "whisper-large-v3-turbo",
+        "auto",
+        "auto",
+        "transcribe",
+        30,
+        true
+      ],
+      "widgets_values_named": {
+        "model": "whisper-large-v3-turbo",
+        "dtype": "auto",
+        "language": "auto",
+        "task": "transcribe",
+        "chunk_length_s": 30,
+        "download_if_missing": true
+      }
+    },
+    {
+      "id": 4,
+      "type": "RaonOpenTTSGenerate",
+      "pos": [
+        539.9096529754665,
+        46.295293311820686
+      ],
+      "size": [
+        400,
+        402
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "raon_model",
+          "type": "RAON_OPENTTS_MODEL",
+          "link": 1
+        },
+        {
+          "name": "ref_audio",
+          "type": "AUDIO",
+          "link": 4
+        },
+        {
+          "name": "ref_text",
+          "type": "STRING",
+          "widget": {
+            "name": "ref_text"
+          },
+          "link": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-raon-opentts",
+        "ver": "1.0.0",
+        "Node name for S&R": "RaonOpenTTSGenerate",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "ref_text": true
+          },
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "I don't really care what you call me, I've been a silent spectator, watching species evolve, empires rise and fall.",
+        "",
+        32,
+        2,
+        -1,
+        1,
+        42,
+        "fixed",
+        0,
+        0.1,
+        false,
+        150
+      ],
+      "widgets_values_named": {
+        "text": "I don't really care what you call me, I've been a silent spectator, watching species evolve, empires rise and fall.",
+        "ref_text": "",
+        "steps": 32,
+        "cfg_strength": 2,
+        "sway_sampling_coef": -1,
+        "speed": 1,
+        "seed": 42,
+        "control_after_generate": "fixed",
+        "fix_duration_seconds": 0,
+        "target_rms": 0.1,
+        "use_vad_duration": false,
+        "cross_fade_ms": 150
+      }
+    },
+    {
+      "id": 3,
+      "type": "RaonOpenTTSLoadModel",
+      "pos": [
+        189,
+        42
+      ],
+      "size": [
+        288.0655187929765,
+        154.48362030175588
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "raon_model",
+          "type": "RAON_OPENTTS_MODEL",
+          "links": [
+            1
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-raon-opentts",
+        "ver": "1.0.0",
+        "Node name for S&R": "RaonOpenTTSLoadModel",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Raon-OpenTTS-1B/Raon-OpenTTS-1B-bf16.safetensors",
+        "auto",
+        "auto",
+        "flash_attention",
+        true
+      ],
+      "widgets_values_named": {
+        "weights": "Raon-OpenTTS-1B/Raon-OpenTTS-1B-bf16.safetensors",
+        "dtype": "auto",
+        "device": "auto",
+        "attention": "flash_attention",
+        "download_if_missing": true
+      }
+    },
+    {
+      "id": 5,
+      "type": "PreviewAudio",
+      "pos": [
+        983.327683763286,
+        44.41322328077856
+      ],
+      "size": [
+        331.90508162340325,
+        144.95620958414452
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.0",
+        "Node name for S&R": "PreviewAudio",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [],
+      "widgets_values_named": {}
+    },
+    {
+      "id": 2,
+      "type": "MarkdownNote",
+      "pos": [
+        -241.39905581080438,
+        284.0440475780673
+      ],
+      "size": [
+        391.5037499401517,
+        511.6087420881731
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "‎",
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "## Raon-OpenTTS\n\n[Raon-OpenTTS](https://github.com/krafton-ai/Raon-OpenTTS) is KRAFTON's open-weight **and** open-data TTS family ([arXiv:2605.20830](https://arxiv.org/abs/2605.20830)): an F5-TTS-style flow-matching Diffusion Transformer over 80-channel mels at 16 kHz, with a HiFi-GAN vocoder. Trained on 510K hours of open data; the 1B matches or beats closed-data SOTA on Seed-TTS-Eval (WER 1.78%, SIM 0.749). Zero-shot voice cloning needs only a short reference clip and its transcript.\n\n## ComfyUI links\n- [Saganaki22/ComfyUI-Raon-OpenTTS](https://github.com/Saganaki22/ComfyUI-Raon-OpenTTS)\n- [🤗 drbaph/Raon-OpenTTS-comfyui](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui)\n\n## About this workflow\n\nZero-shot voice cloning: **Load Model** → **Whisper Transcribe** (builds the reference transcript) → **Generate**.\n\n**Key inputs**\n\n- **weights**: `int8-convrot` (smallest, comfy-kitchen INT8 kernels) or `bf16` (fastest). fp32 is conversion reference and is not listed\n- **ref_audio / ref_text**: clean 3–10 s reference clip + its exact transcript (the Whisper node transcribes for you)\n- **steps**: NFE steps, 32 is the official default; lower is faster and rougher\n- **cfg_strength**: 2.0 official; higher follows the text harder\n- **speed**: speech-rate estimate multiplier (>1 = faster)\n- **seed**: 42 default, repeatable (+1 per text chunk); 0 = random\n- **use_vad_duration**: official VAD-based length estimate; keep on for quiet/short references\n\nLong text is chunked and cross-faded automatically. Output is 16 kHz mono."
+      ],
+      "widgets_values_named": {
+        "text": "## Raon-OpenTTS\n\n[Raon-OpenTTS](https://github.com/krafton-ai/Raon-OpenTTS) is KRAFTON's open-weight **and** open-data TTS family ([arXiv:2605.20830](https://arxiv.org/abs/2605.20830)): an F5-TTS-style flow-matching Diffusion Transformer over 80-channel mels at 16 kHz, with a HiFi-GAN vocoder. Trained on 510K hours of open data; the 1B matches or beats closed-data SOTA on Seed-TTS-Eval (WER 1.78%, SIM 0.749). Zero-shot voice cloning needs only a short reference clip and its transcript.\n\n## ComfyUI links\n- [Saganaki22/ComfyUI-Raon-OpenTTS](https://github.com/Saganaki22/ComfyUI-Raon-OpenTTS)\n- [🤗 drbaph/Raon-OpenTTS-comfyui](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui)\n\n## About this workflow\n\nZero-shot voice cloning: **Load Model** → **Whisper Transcribe** (builds the reference transcript) → **Generate**.\n\n**Key inputs**\n\n- **weights**: `int8-convrot` (smallest, comfy-kitchen INT8 kernels) or `bf16` (fastest). fp32 is conversion reference and is not listed\n- **ref_audio / ref_text**: clean 3–10 s reference clip + its exact transcript (the Whisper node transcribes for you)\n- **steps**: NFE steps, 32 is the official default; lower is faster and rougher\n- **cfg_strength**: 2.0 official; higher follows the text harder\n- **speed**: speech-rate estimate multiplier (>1 = faster)\n- **seed**: 42 default, repeatable (+1 per text chunk); 0 = random\n- **use_vad_duration**: official VAD-based length estimate; keep on for quiet/short references\n\nLong text is chunked and cross-faded automatically. Output is 16 kHz mono."
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 6,
+      "type": "LoadAudio",
+      "pos": [
+        191.41318355865695,
+        253.797683486933
+      ],
+      "size": [
+        283,
+        136
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.33.0",
+        "Node name for S&R": "LoadAudio",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Narrator.wav",
+        null,
+        null
+      ],
+      "widgets_values_named": {
+        "audio": "Narrator.wav",
+        "upload": null
+      }
+    },
+    {
+      "id": 1,
+      "type": "MarkdownNote",
+      "pos": [
+        -233.91793676327404,
+        -155.64388101696122
+      ],
+      "size": [
+        386.92423890703606,
+        385.7438413324562
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "‎",
+      "properties": {
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.8",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "## Model Links\n[🤗 drbaph/Raon-OpenTTS-comfyui](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui) (all builds; the loader auto-downloads) · [🤗 KRAFTON/Raon-OpenTTS-1B](https://huggingface.co/KRAFTON/Raon-OpenTTS-1B) (original) · [🤗 KRAFTON/Raon-OpenTTS-0.3B](https://huggingface.co/KRAFTON/Raon-OpenTTS-0.3B) (original)\n\nThe loader downloads the selected model folder (config, vocab, weights) plus the HiFi-GAN vocoder from the ComfyUI repo when `download_if_missing` is on.\n\nFiles land in `ComfyUI/models/raon_opentts/`\n\n**Raon-OpenTTS-1B** (1042M params)\n\n- [Raon-OpenTTS-1B-int8-convrot.safetensors](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-1B/Raon-OpenTTS-1B-int8-convrot.safetensors) (1.41 GB, smallest)\n- [Raon-OpenTTS-1B-bf16.safetensors](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-1B/Raon-OpenTTS-1B-bf16.safetensors) (2.08 GB, fastest)\n- [config.yaml](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-1B/config.yaml) · [vocab.txt](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-1B/vocab.txt)\n\n**Raon-OpenTTS-0.3B** (339M params)\n\n- [Raon-OpenTTS-0.3B-int8-convrot.safetensors](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-0.3B/Raon-OpenTTS-0.3B-int8-convrot.safetensors) (0.50 GB, smallest)\n- [Raon-OpenTTS-0.3B-bf16.safetensors](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-0.3B/Raon-OpenTTS-0.3B-bf16.safetensors) (0.68 GB, fastest)\n- [config.yaml](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-0.3B/config.yaml) · [vocab.txt](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-0.3B/vocab.txt)\n\n**vocoder** (shared, auto-downloaded)\n\n- [tts-hifigan-libritts-16kHz/generator.ckpt](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/tts-hifigan-libritts-16kHz/generator.ckpt)"
+      ],
+      "widgets_values_named": {
+        "text": "## Model Links\n[🤗 drbaph/Raon-OpenTTS-comfyui](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui) (all builds; the loader auto-downloads) · [🤗 KRAFTON/Raon-OpenTTS-1B](https://huggingface.co/KRAFTON/Raon-OpenTTS-1B) (original) · [🤗 KRAFTON/Raon-OpenTTS-0.3B](https://huggingface.co/KRAFTON/Raon-OpenTTS-0.3B) (original)\n\nThe loader downloads the selected model folder (config, vocab, weights) plus the HiFi-GAN vocoder from the ComfyUI repo when `download_if_missing` is on.\n\nFiles land in `ComfyUI/models/raon_opentts/`\n\n**Raon-OpenTTS-1B** (1042M params)\n\n- [Raon-OpenTTS-1B-int8-convrot.safetensors](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-1B/Raon-OpenTTS-1B-int8-convrot.safetensors) (1.41 GB, smallest)\n- [Raon-OpenTTS-1B-bf16.safetensors](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-1B/Raon-OpenTTS-1B-bf16.safetensors) (2.08 GB, fastest)\n- [config.yaml](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-1B/config.yaml) · [vocab.txt](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-1B/vocab.txt)\n\n**Raon-OpenTTS-0.3B** (339M params)\n\n- [Raon-OpenTTS-0.3B-int8-convrot.safetensors](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-0.3B/Raon-OpenTTS-0.3B-int8-convrot.safetensors) (0.50 GB, smallest)\n- [Raon-OpenTTS-0.3B-bf16.safetensors](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-0.3B/Raon-OpenTTS-0.3B-bf16.safetensors) (0.68 GB, fastest)\n- [config.yaml](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-0.3B/config.yaml) · [vocab.txt](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/Raon-OpenTTS-0.3B/vocab.txt)\n\n**vocoder** (shared, auto-downloaded)\n\n- [tts-hifigan-libritts-16kHz/generator.ckpt](https://huggingface.co/drbaph/Raon-OpenTTS-comfyui/resolve/main/tts-hifigan-libritts-16kHz/generator.ckpt)"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    }
+  ],
+  "links": [
+    [
+      1,
+      3,
+      0,
+      4,
+      0,
+      "RAON_OPENTTS_MODEL"
+    ],
+    [
+      2,
+      4,
+      0,
+      5,
+      0,
+      "AUDIO"
+    ],
+    [
+      3,
+      6,
+      0,
+      7,
+      0,
+      "AUDIO"
+    ],
+    [
+      4,
+      7,
+      0,
+      4,
+      1,
+      "AUDIO"
+    ],
+    [
+      5,
+      7,
+      1,
+      4,
+      2,
+      "STRING"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "Load / Preprocess",
+      "bounding": [
+        174,
+        -28,
+        325,
+        700
+      ],
+      "color": "#b58b2a",
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "Voice Clone",
+      "bounding": [
+        529.9096529754665,
+        -23.70470668817931,
+        420,
+        482
+      ],
+      "color": "#3f789e",
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.9646149645000015,
+      "offset": [
+        577.0973792426976,
+        383.0883507434175
+      ]
+    },
+    "ue_links": [],
+    "links_added_by_ue": [],
+    "frontendVersion": "1.49.6",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

@@ -1,0 +1,12 @@
+numpy
+safetensors
+pyyaml
+torchdiffeq
+jieba
+pypinyin
+pydub
+soundfile
+huggingface_hub
+accelerate
+transformers
+comfy-kitchen
